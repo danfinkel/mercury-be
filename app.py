@@ -1,6 +1,9 @@
+from python.engines.adTechAssistant import main
+
 from flask import Flask
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/') # type: ignore
 def hello_world():
-    return 'Hello, World!'
+    return main()
+    # return 'Hello, World!'
