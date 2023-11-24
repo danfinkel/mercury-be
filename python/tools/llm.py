@@ -12,8 +12,8 @@ from typing import Any, Dict, List
 import openai
 import tiktoken
 
-from llmtypes import TurboTool
-from db import PostgresDatabase
+from ..tools.llmtypes import TurboTool
+from ..tools.db import PostgresDatabase
 
 # load .env file
 load_dotenv()
