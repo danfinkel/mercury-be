@@ -1,2 +1,6 @@
 Flask
 gunicorn
+openai
+psycopg2
+tiktoken
+datetime

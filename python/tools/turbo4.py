@@ -10,8 +10,8 @@ from openai.types import FileObject
 from openai.types.beta.threads.thread_message import ThreadMessage
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
 
-from openaiTools import llm
-from openaiTools.llmtypes import Chat, TurboTool
+from ..tools import llm
+from ..tools.llmtypes import Chat, TurboTool
 
 dotenv.load_dotenv()
 
