@@ -4,3 +4,4 @@ openai
 psycopg2
 tiktoken==0.5.1
 datetime
+python-dotenv
