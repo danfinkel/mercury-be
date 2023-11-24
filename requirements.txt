@@ -2,5 +2,5 @@ Flask
 gunicorn
 openai
 psycopg2
-tiktoken
+tiktoken==0.5.1
 datetime

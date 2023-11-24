@@ -73,15 +73,16 @@ def run_python(pythonScript: str) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--prompt", help="The prompt for the AI")
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--prompt", help="The prompt for the AI")
+    # args = parser.parse_args()
 
-    if not args.prompt:
-        print("Please provide a prompt")
-        return
+    # if not args.prompt:
+    #     print("Please provide a prompt")
+    #     return
 
-    raw_prompt = args.prompt
+    # raw_prompt = args.prompt
+    raw_prompt = "How many users saw an ad?"
 
     assistant_name = "Turbo4"
 
