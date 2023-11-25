@@ -142,6 +142,11 @@ class Turbo4:
             )
 
         return self # type: ignore
+    
+    def get_conversation(self) -> list[Chat]:
+        return sorted(
+            self.chat_messages, key=lambda msg: msg.created, reverse=False
+        )        
 
     # ------------- CORE ASSISTANTS API FUNCTIONS -----------------
 
