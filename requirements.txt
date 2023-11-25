@@ -6,3 +6,4 @@ tiktoken==0.5.1
 datetime
 python-dotenv
 PyYAML
+streamlit
