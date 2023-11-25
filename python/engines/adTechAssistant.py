@@ -40,8 +40,7 @@ custom_function_tool_config = {
 
 def run_python(pythonScript: str) -> str:
     import os
-    import sys
-    from concurrent.futures import ThreadPoolExecutor, TimeoutError
+    import sys   
     import subprocess
     
     # write out script
@@ -134,7 +133,9 @@ def main():
     #     # .bank_results() # type: ignore
     # )
 
-    return prompt
+    # return prompt
+
+    return run_python(pythonScript="print('hi mom')")
 
 
 # if __name__ == '__main__':
