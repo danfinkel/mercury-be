@@ -146,7 +146,14 @@ class Turbo4:
     def get_conversation(self) -> list[Chat]:
         return sorted(
             self.chat_messages, key=lambda msg: msg.created, reverse=False
-        )        
+        )
+
+    def print_conversion(self):
+        print(sorted(
+            self.chat_messages, key=lambda msg: msg.created, reverse=False
+        ))
+        return self
+
 
     # ------------- CORE ASSISTANTS API FUNCTIONS -----------------
 

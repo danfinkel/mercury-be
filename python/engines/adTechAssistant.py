@@ -121,6 +121,7 @@ def main():
         .make_thread()
         .add_message(prompt)
         .run_thread()
+        .print_conversion()
         .add_message("use the run_python function to run the python you've just generated.")
         .run_thread(toolbox=[ai_tools[0].name]) # this is a function that executes a string of python passed into it
         .add_message("Please summarize the conversation in the following format:\n\n QUESTION: {copy the original question here}\n\n PYTHON SCRIPT: {copy the python script here}\n\nANSWER: {copy the answer here}")
