@@ -134,7 +134,42 @@ def main():
     # )
 
     # return prompt
-    return run_python(pythonScript="print('hi mom')")
+    x = """
+import os
+import psycopg2
+
+# Connecting to the database using environment variables
+conn_params = {
+    'host': os.environ['DATABASE_HOST'],
+    'database': os.environ['DATABASE_NAME'],
+    'user': os.environ['DATABASE_USERNAME'],
+    'password': os.environ['DATABASE_PASSWORD']
+}
+
+# SQL query to count distinct users who saw an ad
+query = "SELECT COUNT(DISTINCT(userid)) FROM campaign.exposures;"
+
+# Connect to the database
+conn = psycopg2.connect(**conn_params) # type: ignore
+
+# Create a cursor object to interact with the database
+cur = conn.cursor()
+
+# Execute the query
+cur.execute(query)
+
+# Fetch the result
+num_users = cur.fetchone()[0]
+
+# Print the result
+print(f'The number of users who saw an ad is: {num_users}')
+
+# Close communication with the database
+cur.close()
+conn.close()
+
+"""
+    return run_python(pythonScript=x)
 
 
 # if __name__ == '__main__':
