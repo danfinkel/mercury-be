@@ -113,28 +113,28 @@ def main():
 
     # print(prompt)
 
-    return (
-        assistant.get_or_create_assistant(assistant_name)
-        .set_instructions("You're an elite python developer that specializes in adtech. You generate the most concise and performant python scripts.")
-        .equip_tools(ai_tools) # type: ignore
-        .make_thread()
-        .add_message(prompt)
-        .run_thread()
-        .add_message("use the run_python function to run the python you've just generated.")
-        .run_thread(toolbox=[ai_tools[0].name]) # this is a function that executes a string of python passed into it
-        .add_message("Please summarize the conversation in the following format:\n\n QUESTION: {copy the original question here}\n\n PYTHON SCRIPT: {copy the python script here}\n\nANSWER: {copy the answer here}")
-        .run_thread()
-        .print_conversion()    
-        .get_conversation()
-        # .spy_on_assistant(agent_instruments.make_agent_chat_file(assistant_name))
-        # .get_costs_and_tokens(
-        #     agent_instruments.make_agent_cost_file(assistant_name)
-        #     )
-        # .bank_results() # type: ignore
-    )
+    # return (
+    #     assistant.get_or_create_assistant(assistant_name)
+    #     .set_instructions("You're an elite python developer that specializes in adtech. You generate the most concise and performant python scripts.")
+    #     .equip_tools(ai_tools) # type: ignore
+    #     .make_thread()
+    #     .add_message(prompt)
+    #     .run_thread()
+    #     .add_message("use the run_python function to run the python you've just generated.")
+    #     .run_thread(toolbox=[ai_tools[0].name]) # this is a function that executes a string of python passed into it
+    #     .add_message("Please summarize the conversation in the following format:\n\n QUESTION: {copy the original question here}\n\n PYTHON SCRIPT: {copy the python script here}\n\nANSWER: {copy the answer here}")
+    #     .run_thread()
+    #     .print_conversion()    
+    #     .get_conversation()
+    #     # .spy_on_assistant(agent_instruments.make_agent_chat_file(assistant_name))
+    #     # .get_costs_and_tokens(
+    #     #     agent_instruments.make_agent_cost_file(assistant_name)
+    #     #     )
+    #     # .bank_results() # type: ignore
+    # )
 
     # return prompt
-    # return run_python(pythonScript="print('hi mom')")
+    return run_python(pythonScript="print('hi mom')")
 
 
 # if __name__ == '__main__':
