@@ -140,10 +140,10 @@ import psycopg2
 
 # Connecting to the database using environment variables
 conn_params = {
-    'host': os.environ['DATABASE_HOST'],
-    'database': os.environ['DATABASE_NAME'],
-    'user': os.environ['DATABASE_USERNAME'],
-    'password': os.environ['DATABASE_PASSWORD']
+    'host': os.environ['RENDER_PG_HOST'],
+    'database': os.environ['RENDER_PG_NAME'],
+    'user': os.environ['RENDER_PG_USER'],
+    'password': os.environ['RENDER_PG_PASSWORD']
 }
 
 # SQL query to count distinct users who saw an ad
