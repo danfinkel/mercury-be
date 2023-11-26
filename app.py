@@ -11,10 +11,15 @@ def hello_world():
 @app.route('/test') # type: ignore
 def get_index():   
     def simplefcn():
-        yield '1'
-        yield '2'
-        yield '3'
-        yield '4'
-        yield '5'
+        import time
+        yield '1' + '\n'
+        time.sleep(2)
+        yield '2' + '\n'
+        time.sleep(2)
+        yield '3' + '\n'
+        time.sleep(2)
+        yield '4' + '\n'
+        time.sleep(2)
+        yield '5' + '\n'
     
     return simplefcn()
