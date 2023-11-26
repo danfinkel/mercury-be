@@ -109,7 +109,32 @@ def main():
         table_definitions # type: ignore
     )    
 
-    prompt += '\n\n The database connection parameters can be found in env variables:\nhost: DATABASE_HOST\ndatabase: DATABASE_NAME\nusername: DATABASE_USERNAME\npassword: DATABASE_PASSWORD'
+    prompt += '\n\n The database connection parameters can be found in env variables:\nhost: RENDER_PG_HOST\ndatabase: RENDER_PG_NAME\nusername: RENDER_PG_USER\npassword: RENDER_PG_PASSWORD'
+
+    print('***** 1')
+    assistant = assistant.get_or_create_assistant(assistant_name)
+    print('***** 2')
+    assistant = assistant.set_instructions("You're an elite python developer that specializes in adtech. You generate the most concise and performant python scripts.")
+    print('***** 3')
+    assistant = assistant.equip_tools(ai_tools) # type: ignore
+    print('***** 4')
+    assistant = assistant.make_thread()
+    print('***** 5')
+    assistant = assistant.add_message(prompt)
+    print('***** 6')
+    assistant = assistant.run_thread()
+    print('***** 7')
+    assistant = assistant.add_message("use the run_python function to run the python you've just generated.")
+    print('***** 8')
+    assistant = assistant.run_thread(toolbox=[ai_tools[0].name]) # this is a function that executes a string of python passed into it
+    print('***** 9')
+    assistant = assistant.add_message("Please summarize the conversation in the following format:\n\n QUESTION: {copy the original question here}\n\n PYTHON SCRIPT: {copy the python script here}\n\nANSWER: {copy the answer here}")
+    print('***** 10')
+    assistant = assistant.run_thread()
+    print('***** 11')
+    print(assistant.get_conversation())
+
+    return 'Made it all the way through'
 
     # print(prompt)
 
@@ -169,10 +194,7 @@ cur.close()
 conn.close()
 
 """
-    print(os.environ['DATABASE_HOST'])
-    print(os.environ['DATABASE_NAME'])
-    print(os.environ['DATABASE_USERNAME'])
-    return run_python(pythonScript=x)
+    # return run_python(pythonScript=x)
 
 
 # if __name__ == '__main__':
