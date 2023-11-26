@@ -169,6 +169,9 @@ cur.close()
 conn.close()
 
 """
+    print(os.environ['DATABASE_HOST'])
+    print(os.environ['DATABASE_NAME'])
+    print(os.environ['DATABASE_USERNAME'])
     return run_python(pythonScript=x)
 
 
