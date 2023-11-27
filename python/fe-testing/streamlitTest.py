@@ -10,8 +10,8 @@ async def chatWAI():
     async with aiohttp.request('get', 'https://mercury-jzz5.onrender.com/test') as r:
         async for line in r.content:
             with st.chat_message(name='user'):
-                # st.write(str(line))
-                st.write(json.loads(line))
+                st.write(str(line))
+                # st.write(json.loads(line))
 
 
 st.set_page_config(page_title="📈💬 Analyics Agent Chat")
