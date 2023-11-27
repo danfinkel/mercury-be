@@ -9,8 +9,13 @@ prompts = {'reach': 'How many users saw an ad?'}
 async def chatWAI():
     async with aiohttp.request('get', 'https://mercury-jzz5.onrender.com/test') as r:
         async for line in r.content:
+            print('---')
+            print(line)
+            print('---')
+            content = json.loads(line.decode("utf-8").replace("'",'"').replace("\n",""))["content"]
             with st.chat_message(name='user'):
-                st.write(str(line))
+                # st.write(str(line))
+                st.write(str(content))
                 # st.write(json.loads(line))
 
 

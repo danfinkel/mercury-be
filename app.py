@@ -19,12 +19,12 @@ def get_index():
         yield str({"user": "dan", "content": "AI is not wired up yet"}) + "\n"
         time.sleep(2)
         # yield "So instead you are getting this automatic response" + "\n"
-        yield str({"So instead you are getting this automatic response"}) + "\n"
+        yield str({"user": "dan", "content": "So instead you are getting this automatic response"}) + "\n"
         time.sleep(2)
         # yield "Perhaps next time..." + "\n"
-        yield str({"Perhaps next time..."}) + "\n"
+        yield str({"user": "dan", "content": "Perhaps next time..."}) + "\n"
         time.sleep(2)
         # yield "OK goodbye" + "\n"
-        yield str({"OK goodbye"}) + "\n"
+        yield str({"user": "dan", "content": "OK goodbye"}) + "\n"
     
     return simplefcn()
