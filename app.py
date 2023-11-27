@@ -12,14 +12,14 @@ def hello_world():
 def get_index():   
     def simplefcn():
         import time
-        yield 'Hello this is a test' + '\n'
+        yield {"user": 'dan', "content": 'Hello this is a test'}
         time.sleep(2)
-        yield 'AI is not wired up yet' + '\n'
+        yield {"user": "dan", "content": 'AI is not wired up yet'}
         time.sleep(2)
-        yield 'So instead you are getting this automatic response' + '\n'
+        yield {"user": "dan", "content": 'So instead you are getting this automatic response'}
         time.sleep(2)
-        yield 'Perhaps next time...' + '\n'
+        yield {"user": "dan", "content": 'Perhaps next time...'}
         time.sleep(2)
-        yield 'OK goodbye' + '\n'
+        yield {"user": "dan", "content": 'OK goodbye'}
     
     return simplefcn()
