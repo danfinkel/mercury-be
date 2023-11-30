@@ -180,7 +180,7 @@ class Turbo4:
 
         self.model = model
 
-        return self, str({"user": "dan", "content": f"Good news you have created an assistant named {name}"}) + "\n"
+        return self, str({"user": "sys_admin", "content": f"Good news you have created an assistant named {name}"}) + "\n"
 
     def set_instructions(self, instructions: str):
         print(f"set_instructions()")
@@ -192,7 +192,7 @@ class Turbo4:
         updated_assistant = self.client.beta.assistants.update(
             assistant_id=self.assistant_id, instructions=instructions
         )
-        return self
+        return self, str({"user": "sys_admin", "content": f"The assistant has been instructed: {instructions}"}) + "\n"
 
     def equip_tools(
         self, turbo_tools: List[TurboTool], equip_on_assistant: bool = False

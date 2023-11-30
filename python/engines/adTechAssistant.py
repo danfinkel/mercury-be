@@ -10,6 +10,7 @@ from typing import List, Callable
 import os
 import argparse
 import dotenv
+import time
 
 # from postgres_da_ai_agent.agents.instruments import PostgresAgentInstruments
 # from postgres_da_ai_agent.modules import embeddings
@@ -113,10 +114,14 @@ def runAdTechAI(raw_prompt):
 
     print('***** 1')
     assistant, status_msg = assistant.get_or_create_assistant(assistant_name)
-
     yield status_msg
-    # print('***** 2')
-    # assistant = assistant.set_instructions("You're an elite python developer that specializes in adtech. You generate the most concise and performant python scripts.") # type: ignore
+    time.sleep(1)
+
+    print('***** 2')
+    assistant, instruct_msg = assistant.set_instructions("You're an elite python developer that specializes in adtech. You generate the most concise and performant python scripts.") # type: ignore
+    yield instruct_msg
+    time.sleep(1)
+    
     # print('***** 3')
     # assistant = assistant.equip_tools(ai_tools) # type: ignore
     # print('***** 4')

@@ -8,7 +8,8 @@ CHAT_ICONS = {
     "dan": "⛹️",
     "Engineer": "⛹️",
     "databaseAdmin": "🖥️",
-    "user": "🦁"
+    "user": "🦁",
+    "sys_admin": "🔧"
 }
 
 # URL = 'https://mercury-jzz5.onrender.com/test'
