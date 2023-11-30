@@ -125,10 +125,13 @@ def runAdTechAI(raw_prompt):
     print('***** 3')
     assistant = assistant.equip_tools(ai_tools) # type: ignore
     
-    # print('***** 4')
-    # assistant = assistant.make_thread()
-    # print('***** 5')
-    # assistant = assistant.add_message(prompt)
+    print('***** 4')
+    assistant = assistant.make_thread()
+    
+    print('***** 5')
+    assistant = assistant.add_message(prompt)
+    yield str({"user": "sys_admin", "content": f"Here is the enriched prompt for AI: {prompt}"}) + "\n"
+    
     # print('***** 6')
     # assistant = assistant.run_thread()
     # print('***** 7')
