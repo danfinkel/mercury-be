@@ -118,12 +118,13 @@ def runAdTechAI(raw_prompt):
     time.sleep(1)
 
     print('***** 2')
-    assistant, instruct_msg = assistant.set_instructions("You're an elite python developer that specializes in adtech. You generate the most concise and performant python scripts.") # type: ignore
+    assistant, instruct_msg = assistant.set_instructions("You are an elite python developer that specializes in adtech. You generate the most concise and performant python scripts.") # type: ignore
     yield instruct_msg
     time.sleep(1)
+
+    print('***** 3')
+    assistant = assistant.equip_tools(ai_tools) # type: ignore
     
-    # print('***** 3')
-    # assistant = assistant.equip_tools(ai_tools) # type: ignore
     # print('***** 4')
     # assistant = assistant.make_thread()
     # print('***** 5')
