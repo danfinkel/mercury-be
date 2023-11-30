@@ -28,15 +28,16 @@ async def chatWAI(promptForAI=st.session_state.get("prompt")):
         st.write(promptForAI)
         st.session_state.chat_responses.append({"chatName": 'user', "content": promptForAI})    
 
-    async with aiohttp.request('post', URL, json={'prompt': promptForAI}) as r:
-        async for line in r.content:
-            formatted_line = line.decode("utf-8").replace("'",'"').replace("\n","")
-            content = json.loads(formatted_line)["content"]
-            chatName = json.loads(formatted_line)["user"]
-            with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
-                st.write(str(content))
-                st.session_state.chat_responses.append({"chatName": chatName, "content": str(content)})
-
+    async with aiohttp.ClientSession() as session:
+        async with session.post(URL, data={'prompt': promptForAI}) as r:
+            async for line in r.content:
+                formatted_line = line.decode("utf-8").replace("'",'"').replace("\n","")
+                content = json.loads(formatted_line)["content"]
+                chatName = json.loads(formatted_line)["user"]
+                with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
+                    st.write(str(content))
+                    st.session_state.chat_responses.append({"chatName": chatName, "content": str(content)})
+                    
 class StreamlitPage():
     def __init__(self, page_title):
         self.page_title = page_title

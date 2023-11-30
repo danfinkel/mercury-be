@@ -1,4 +1,4 @@
-from python.engines.adTechAssistant import main
+from python.engines.adTechAssistant import runAdTechAI
 
 from flask import Flask, request
 app = Flask(__name__)
@@ -27,3 +27,8 @@ def get_index():
     prompt = request.form.get("prompt")
     print(prompt)
     return simplefcn(prompt)
+
+@app.route('/promptAI', methods=['POST']) # type: ignore
+def executeAI():
+    prompt = request.form.get("prompt")
+    runAdTechAI(prompt)

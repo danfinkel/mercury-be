@@ -180,7 +180,7 @@ class Turbo4:
 
         self.model = model
 
-        return self
+        return self, str({"user": "dan", "content": f"Good news you have created an assistant named {name}"}) + "\n"
 
     def set_instructions(self, instructions: str):
         print(f"set_instructions()")
