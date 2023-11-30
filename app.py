@@ -31,4 +31,4 @@ def get_index():
 @app.route('/promptAI', methods=['POST']) # type: ignore
 def executeAI():
     prompt = request.form.get("prompt")
-    runAdTechAI(prompt)
+    return runAdTechAI(prompt)

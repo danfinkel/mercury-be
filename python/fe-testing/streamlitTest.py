@@ -11,7 +11,8 @@ CHAT_ICONS = {
     "user": "🦁"
 }
 
-URL = 'https://mercury-jzz5.onrender.com/test'
+# URL = 'https://mercury-jzz5.onrender.com/test'
+URL = 'https://mercury-jzz5.onrender.com/promptAI'
 
 prompts = {'reach': 'How many users saw an ad?',
            'impressions': 'How many ads were served?',
@@ -37,7 +38,7 @@ async def chatWAI(promptForAI=st.session_state.get("prompt")):
                 with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
                     st.write(str(content))
                     st.session_state.chat_responses.append({"chatName": chatName, "content": str(content)})
-                    
+
 class StreamlitPage():
     def __init__(self, page_title):
         self.page_title = page_title
