@@ -25,4 +25,5 @@ def get_index():
         yield str({"user": "dan", "content": "OK goodbye"}) + "\n"
     
     prompt = request.form.get("prompt")
+    print(prompt)
     return simplefcn(prompt)

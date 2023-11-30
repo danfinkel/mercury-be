@@ -22,7 +22,7 @@ async def chatWAI(promptForAI=st.session_state.get("prompt")):
     """
     Inspired by: https://stackoverflow.com/questions/59681726/how-to-read-lines-of-a-streaming-api-with-aiohttp-in-python
     and: https://stackoverflow.com/questions/74800726/running-asyncio-with-streamlit-dashboard
-    Tutoria here: https://realpython.com/python-async-features/
+    General async Tutorial here: https://realpython.com/python-async-features/
     """
     with st.chat_message(name='user', avatar=CHAT_ICONS.get('user')):
         st.write(promptForAI)
