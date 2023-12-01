@@ -130,10 +130,14 @@ def runAdTechAI(raw_prompt):
     
     print('***** 5')
     assistant = assistant.add_message(prompt)
-    yield str({"user": "sys_admin", "content": f"Here is the enriched prompt for AI: {prompt}"}) + "\n"
-    
-    # print('***** 6')
-    # assistant = assistant.run_thread()
+    yield str({"user": "sys_admin", "content": f"Here is the enriched prompt for AI:\n {prompt}"}) + "\n"
+    msgs_sent = [prompt]
+
+    print('***** 6')
+    assistant = assistant.run_thread()
+    for msg in assistant.get_conversation():
+        if msg.message not in msgs_sent:
+            yield str({"user": "robot", "content": msg.message}) + "\n"
     # print('***** 7')
     # assistant = assistant.add_message("use the run_python function to run the python you've just generated.")
     # print('***** 8')
