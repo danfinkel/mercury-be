@@ -9,7 +9,8 @@ CHAT_ICONS = {
     "Engineer": "⛹️",
     "databaseAdmin": "🖥️",
     "user": "🦁",
-    "sys_admin": "🔧"
+    "sys_admin": "🔧",
+    "robot": "🤖"
 }
 
 # URL = 'https://mercury-jzz5.onrender.com/test'
@@ -33,9 +34,14 @@ async def chatWAI(promptForAI=st.session_state.get("prompt")):
     async with aiohttp.ClientSession() as session:
         async with session.post(URL, data={'prompt': promptForAI}) as r:
             async for line in r.content:
-                formatted_line = line.decode("utf-8").replace("'",'"').replace("\n","")
-                content = json.loads(formatted_line)["content"]
-                chatName = json.loads(formatted_line)["user"]
+                formatted_line = line.decode("utf-8").replace("'",'"').replace("\n","").replace('"""',"'''")
+                try:
+                    content = json.loads(formatted_line)["content"]
+                    chatName = json.loads(formatted_line)["user"]
+                except json.decoder.JSONDecodeError:
+                    print(formatted_line)
+                    content = "Error retrieving content"
+                    chatName = "dan"
                 with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
                     st.write(str(content))
                     st.session_state.chat_responses.append({"chatName": chatName, "content": str(content)})
