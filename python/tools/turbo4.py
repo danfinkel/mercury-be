@@ -9,13 +9,12 @@ from openai.types.beta import Thread, Assistant
 from openai.types import FileObject
 from openai.types.beta.threads.thread_message import ThreadMessage
 from openai.types.beta.threads.run_submit_tool_outputs_params import ToolOutput
+from datetime import date
 
 from ..tools import llm
 from ..tools.llmtypes import Chat, TurboTool
 
 dotenv.load_dotenv()
-
-
 
 class Turbo4:
     """
@@ -29,6 +28,7 @@ class Turbo4:
         self.current_thread_id = None
         self.thread_messages: List[ThreadMessage] = []
         self.local_messages = []
+        self.published_messages: List[Chat] = []
         self.assistant_id = None
         self.polling_interval = (
             0.5  # Interval in seconds to poll the API for thread run completion
@@ -41,7 +41,7 @@ class Turbo4:
             Chat(
                 from_name=msg.role,
                 to_name="assistant" if msg.role == "user" else "user",
-                message=llm.safe_get(msg.model_dump(), "content.0.text.value"), # type: ignore
+                message=str(llm.safe_get(msg.model_dump(), "content.0.text.value")), # type: ignore
                 created=msg.created_at,
             )
             for msg in self.thread_messages
@@ -153,6 +153,14 @@ class Turbo4:
             self.chat_messages, key=lambda msg: msg.created, reverse=False
         ))
         return self
+    
+    def get_unpublished_msgs(self):
+        unpublished = []
+        for msg in self.chat_messages:
+            if msg.message not in [x.message for x in self.published_messages]:
+                unpublished.append(msg)
+                self.published_messages.append(msg)
+        return unpublished
 
 
     # ------------- CORE ASSISTANTS API FUNCTIONS -----------------
@@ -180,7 +188,16 @@ class Turbo4:
 
         self.model = model
 
-        return self, str({"user": "sys_admin", "content": f"Good news you have created an assistant named {name}"}) + "\n"
+        create_msg = Chat(
+                from_name="sys_admin",
+                to_name="front_end",
+                message=f"Good news you have created an assistant named {name}",
+                created=date.today().strftime('%Y-%m-%d'), # type: ignore
+        )
+
+        self.published_messages.append(create_msg)
+        return self, str({"user": create_msg.from_name, 
+                          "content": create_msg.message}) + "\n"
 
     def set_instructions(self, instructions: str):
         print(f"set_instructions()")
@@ -192,7 +209,17 @@ class Turbo4:
         updated_assistant = self.client.beta.assistants.update(
             assistant_id=self.assistant_id, instructions=instructions
         )
-        return self, str({"user": "sys_admin", "content": f"The assistant has been instructed: {instructions}"}) + "\n"
+
+        instruction_msg = Chat(
+                from_name="sys_admin",
+                to_name="front_end",
+                message= f"The assistant has been instructed:\n\n {instructions}",
+                created=date.today().strftime('%Y-%m-%d'), # type: ignore
+        )
+        self.published_messages.append(instruction_msg)
+
+        return self, str({"user": instruction_msg.from_name, 
+                          "content": instruction_msg.message}) + "\n"                
 
     def equip_tools(
         self, turbo_tools: List[TurboTool], equip_on_assistant: bool = False
@@ -235,7 +262,17 @@ class Turbo4:
         )
         if refresh_threads:
             self.load_threads()
-        return self
+        
+        msg_to_ai = Chat(
+                from_name="sys_admin",
+                to_name="front_end",
+                message=message,
+                created=date.today().strftime('%Y-%m-%d'), # type: ignore
+        )
+        self.published_messages.append(msg_to_ai)
+
+        return self, str({"user": msg_to_ai.from_name, 
+                          "content": msg_to_ai.message}) + "\n"
 
     def load_threads(self):
         self.thread_messages = self.client.beta.threads.messages.list(
@@ -323,7 +360,8 @@ class Turbo4:
                 )
             elif run_status.status == "completed":
                 self.load_threads()
-                return self
+                new_msgs = self.get_unpublished_msgs()
+                return self, new_msgs
 
             time.sleep(self.polling_interval)  # Wait a little before polling again
 

@@ -13,10 +13,11 @@ CHAT_ICONS = {
     "robot": "🤖"
 }
 
-# URL = 'https://mercury-jzz5.onrender.com/test'
-URL = 'https://mercury-jzz5.onrender.com/promptAI'
+# URL = 'https://mercury-jzz5.onrender.com/promptAI'
+URL = "http://127.0.0.1:5000/promptAI"
 
 prompts = {'reach': 'How many users saw an ad?',
+           '7-Day Daily Reach': 'Please report daily campaign reach for a 7 day loopback window from August 1 2023 to September 1 2023',
            'impressions': 'How many ads were served?',
            'lift': 'What was the lift of the campaign?'
            }
@@ -34,21 +35,23 @@ async def chatWAI(promptForAI=st.session_state.get("prompt")):
     async with aiohttp.ClientSession() as session:
         async with session.post(URL, data={'prompt': promptForAI}) as r:
             async for line in r.content:
-                formatted_line = line.decode("utf-8").replace("'",'"').replace("\n","").replace('"""',"'''")
+                # line = line.replace(b'"', b'\\\'')
+                formatted_line = line.replace(b'"', b'\\\'').decode('utf-8').replace("'",'"')                
                 try:
                     content = json.loads(formatted_line)["content"]
                     chatName = json.loads(formatted_line)["user"]
                 except json.decoder.JSONDecodeError:
-                    print(formatted_line)
-                    content = "Error retrieving content"
-                    chatName = "dan"
+                    print('ERROR ERROR ERROR')
+                    print(line)
+                    content = str(formatted_line.split('"content": ')[1].split('}\n')[0])
+                    chatName = str(formatted_line.split('"user": ')[1]).split(', "content')[0]
                 with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
                     st.write(str(content))
                     st.session_state.chat_responses.append({"chatName": chatName, "content": str(content)})
 
 class StreamlitPage():
     def __init__(self, page_title):
-        self.page_title = page_title
+        self.page_title = page_title        
 
     @property
     def page_title(self):
@@ -63,11 +66,13 @@ class StreamlitChatPage(StreamlitPage):
         super().__init__(page_title) # type: ignore        
 
         st.set_page_config(page_title=self.page_title)
+        self.tab1, self.tab2, self.tab3, self.tab4 = st.tabs(["AI Chat", "Summary", "Run Python Code", "Audit Results"])
 
     def _top_page(self):        
-
+        
         st.title('📈💬 OpenAI Powered Analytics')
-        st.write("AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")
+        st.write("AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")        
+        st.markdown("### Legend:\n AI Assistant: ⛹️\n\n Sys Admin: 🔧\n\n User: 🦁")
         st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
 
     def _set_chat(self):
@@ -101,7 +106,8 @@ class StreamlitChatPage(StreamlitPage):
             self.clear_button = st.button("Clear", on_click=self.clear_chat)  
 
     def _chat_input(self):
-        promptForAI = st.chat_input(placeholder="Enter your request here")
+        # promptForAI = st.chat_input(placeholder="Enter your request here")
+        promptForAI = st.text_input("Enter your request here")
         if promptForAI:
             st.session_state.prompt = promptForAI # type: ignore
             asyncio.run(chatWAI(promptForAI))    
@@ -120,14 +126,15 @@ class StreamlitChatPage(StreamlitPage):
         st.session_state.text = None
 
     def initialize(self):
-        self._top_page()
-        self._build_menu()
-        self._populate_chat()  
-        self._chat_input()      
+        with self.tab1:
+            self._top_page()        
+            self._build_menu()
+            self._populate_chat()  
+            self._chat_input()      
 
-        if self.run_button:
-            st.session_state.prompt = prompts[self.selected_prompt] # type: ignore
-            asyncio.run(chatWAI(st.session_state.prompt))
+            if self.run_button:
+                st.session_state.prompt = prompts[self.selected_prompt] # type: ignore
+                asyncio.run(chatWAI(st.session_state.prompt))
 
 cp = StreamlitChatPage(page_title='📈💬 OpenAI Powered Analytics')
 cp.initialize()  

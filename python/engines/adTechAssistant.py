@@ -73,24 +73,12 @@ def run_python(pythonScript: str) -> str:
 
 
 def runAdTechAI(raw_prompt):
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--prompt", help="The prompt for the AI")
-    # args = parser.parse_args()
-
-    # if not args.prompt:
-    #     print("Please provide a prompt")
-    #     return
-
-    # raw_prompt = args.prompt
-    # raw_prompt = "How many users saw an ad?"
-
     assistant_name = "Turbo4"
 
     assistant = Turbo4()
 
-    session_id = rand.generate_session_id(assistant_name + raw_prompt)
-
-    agent_instruments = AgentInstruments(session_id=session_id)
+    # session_id = rand.generate_session_id(assistant_name + raw_prompt)
+    # agent_instruments = AgentInstruments(session_id=session_id)
 
     ai_tools = [
         TurboTool("run_python", custom_function_tool_config, run_python),
@@ -105,7 +93,7 @@ def runAdTechAI(raw_prompt):
 
     prompt = add_cap_ref(
         prompt,  # type: ignore
-        f"Use these {POSTGRES_TABLE_DEFINITION_CAP_REF} to get data to support the analysis.", 
+        f"\n\nUse these {POSTGRES_TABLE_DEFINITION_CAP_REF} to get data to support the analysis.", 
         POSTGRES_TABLE_DEFINITION_CAP_REF, 
         table_definitions # type: ignore
     )    
@@ -129,27 +117,42 @@ def runAdTechAI(raw_prompt):
     assistant = assistant.make_thread()
     
     print('***** 5')
-    assistant = assistant.add_message(prompt)
-    yield str({"user": "sys_admin", "content": f"Here is the enriched prompt for AI:\n {prompt}"}) + "\n"
-    msgs_sent = [prompt]
+    assistant, prompt_msg = assistant.add_message(prompt)
+    yield str({"user": "sys_admin", 
+                "content": "Here is your enriched prompt"}) + "\n"
+    yield prompt_msg
 
     print('***** 6')
-    assistant = assistant.run_thread()
-    for msg in assistant.get_conversation():
-        if msg.message not in msgs_sent:
-            yield str({"user": "robot", "content": msg.message}) + "\n"
-    # print('***** 7')
-    # assistant = assistant.add_message("use the run_python function to run the python you've just generated.")
-    # print('***** 8')
-    # assistant = assistant.run_thread(toolbox=[ai_tools[0].name]) # this is a function that executes a string of python passed into it
-    # print('***** 9')
-    # assistant = assistant.add_message("Please summarize the conversation in the following format:\n\n QUESTION: {copy the original question here}\n\n PYTHON SCRIPT: {copy the python script here}\n\nANSWER: {copy the answer here}")
-    # print('***** 10')
-    # assistant = assistant.run_thread()
+    assistant, new_msgs = assistant.run_thread()
+    for msg in new_msgs:
+        yield str({"user": "dan", "content": msg.message}) + "\n"
+
+    print('***** 7')
+    assistant, next_step_msg = assistant.add_message("use the run_python function to run the python you have just generated.")
+    yield str({"user": "dan", 
+               "content": "Next we ask AI to execute the script"}) + "\n"
+    yield next_step_msg
+
+    print('***** 8')
+    assistant, new_msgs = assistant.run_thread(toolbox=[ai_tools[0].name]) # this is a function that executes a string of python passed into it
+    for msg in new_msgs:
+        yield str({"user": "dan", "content": msg.message}) + "\n"
+
+    
+    print('***** 9')
+    assistant, summary_msg = assistant.add_message("Please summarize the conversation in the following format:\n\n QUESTION: {copy the original question here}\n\n PYTHON SCRIPT: {copy the python script here}\n\nANSWER: {copy the answer here}")
+    yield str({"user": "sys_admin", "content": "Generating a summary message"}) + "\n"
+    
+    print('***** 10')
+    assistant, new_msgs = assistant.run_thread()
+    for msg in new_msgs:
+        yield str({"user": "dan", "content": msg.message}) + "\n"    
+
+
     # print('***** 11')
     # print(assistant.get_conversation())
 
-    # return 'Made it all the way through'
+    return 'Made it all the way through'
 
     # print(prompt)
 
@@ -174,43 +177,3 @@ def runAdTechAI(raw_prompt):
     # )
 
     # return prompt
-    x = """
-import os
-import psycopg2
-
-# Connecting to the database using environment variables
-conn_params = {
-    'host': os.environ['RENDER_PG_HOST'],
-    'database': os.environ['RENDER_PG_NAME'],
-    'user': os.environ['RENDER_PG_USER'],
-    'password': os.environ['RENDER_PG_PASSWORD']
-}
-
-# SQL query to count distinct users who saw an ad
-query = "SELECT COUNT(DISTINCT(userid)) FROM campaign.exposures;"
-
-# Connect to the database
-conn = psycopg2.connect(**conn_params) # type: ignore
-
-# Create a cursor object to interact with the database
-cur = conn.cursor()
-
-# Execute the query
-cur.execute(query)
-
-# Fetch the result
-num_users = cur.fetchone()[0]
-
-# Print the result
-print(f'The number of users who saw an ad is: {num_users}')
-
-# Close communication with the database
-cur.close()
-conn.close()
-
-"""
-    # return run_python(pythonScript=x)
-
-
-# if __name__ == '__main__':
-#     print(main())
