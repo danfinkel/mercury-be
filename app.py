@@ -24,11 +24,15 @@ def get_index():
         time.sleep(2)
         yield str({"user": "dan", "content": "OK goodbye"}) + "\n"
     
-    prompt = request.form.get("prompt")
+    # prompt = request.form.get("prompt")
+    prompt = request.get_json().get('prompt', None)
     print(prompt)
+    print(request.get_json())
     return simplefcn(prompt)
 
 @app.route('/promptAI', methods=['POST']) # type: ignore
 def executeAI():
     prompt = request.form.get("prompt")
+    if prompt is None:
+        prompt = request.get_json().get('prompt', None)
     return runAdTechAI(prompt)

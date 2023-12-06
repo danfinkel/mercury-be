@@ -78,7 +78,7 @@ class StreamlitChatPage(StreamlitPage):
     @ai_question.setter
     def ai_question(self, value):
         self._ai_question = value
-        if len(st.session_state.chat_responses) > 0:
+        if 'chat_responses' in st.session_state.keys() and len(st.session_state.chat_responses) > 0:
             for chat in st.session_state.chat_responses:
                 if 'QUESTION' in chat["content"]:
                     self._ai_question = chat["content"].split('QUESTION:')[1].split('PYTHON SCRIPT')[0]
@@ -91,7 +91,7 @@ class StreamlitChatPage(StreamlitPage):
     @ai_code.setter
     def ai_code(self, value):
         self._ai_code = value
-        if len(st.session_state.chat_responses) > 0:
+        if 'chat_responses' in st.session_state.keys() and len(st.session_state.chat_responses) > 0:
             for chat in st.session_state.chat_responses:
                 if 'PYTHON' in chat["content"]:
                     self._ai_code = chat["content"].split('PYTHON SCRIPT:')[1].split('ANSWER')[0]
@@ -104,7 +104,7 @@ class StreamlitChatPage(StreamlitPage):
     @ai_answer.setter
     def ai_answer(self, value):
         self._ai_answer = value
-        if len(st.session_state.chat_responses) > 0:
+        if 'chat_responses' in st.session_state.keys() and len(st.session_state.chat_responses) > 0:
             for chat in st.session_state.chat_responses:
                 if 'ANSWER' in chat["content"]:
                     self._ai_answer = chat["content"].split('ANSWER:')[1]
