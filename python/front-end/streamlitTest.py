@@ -66,13 +66,54 @@ class StreamlitChatPage(StreamlitPage):
         super().__init__(page_title) # type: ignore        
 
         st.set_page_config(page_title=self.page_title)
-        self.tab1, self.tab2, self.tab3, self.tab4 = st.tabs(["AI Chat", "Summary", "Run Python Code", "Audit Results"])
+        self.tab1, self.tab2, self.tab3, self.tab4, self.tab5 = st.tabs(["AI Chat", "Summary", "Run Python Code", "Audit Results", "Save for Reuse"])
+        self.ai_question = 'No Question Yet Submitted'
+        self.ai_code = 'No Python Yet Generated'
+        self.ai_answer = "No AI Answer Yet Generated"
 
+    @property
+    def ai_question(self):
+        return self._ai_question # type: ignore
+    
+    @ai_question.setter
+    def ai_question(self, value):
+        self._ai_question = value
+        if len(st.session_state.chat_responses) > 0:
+            for chat in st.session_state.chat_responses:
+                if 'QUESTION' in chat["content"]:
+                    self._ai_question = chat["content"].split('QUESTION:')[1].split('PYTHON SCRIPT')[0]
+                    break
+
+    @property
+    def ai_code(self):
+        return self._ai_code # type: ignore
+    
+    @ai_code.setter
+    def ai_code(self, value):
+        self._ai_code = value
+        if len(st.session_state.chat_responses) > 0:
+            for chat in st.session_state.chat_responses:
+                if 'PYTHON' in chat["content"]:
+                    self._ai_code = chat["content"].split('PYTHON SCRIPT:')[1].split('ANSWER')[0]
+                    break
+
+    @property
+    def ai_answer(self):
+        return self._ai_answer # type: ignore
+    
+    @ai_answer.setter
+    def ai_answer(self, value):
+        self._ai_answer = value
+        if len(st.session_state.chat_responses) > 0:
+            for chat in st.session_state.chat_responses:
+                if 'ANSWER' in chat["content"]:
+                    self._ai_answer = chat["content"].split('ANSWER:')[1]
+                    break
+    
     def _top_page(self):        
         
         st.title('📈💬 OpenAI Powered Analytics')
         st.write("AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")        
-        st.markdown("### Legend:\n AI Assistant: ⛹️\n\n Sys Admin: 🔧\n\n User: 🦁")
         st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
 
     def _set_chat(self):
@@ -104,13 +145,24 @@ class StreamlitChatPage(StreamlitPage):
             self.run_button = st.button("Run Prompt")
 
             self.clear_button = st.button("Clear", on_click=self.clear_chat)  
+            st.markdown("### Legend:\n AI Assistant: ⛹️\n\n Sys Admin: 🔧\n\n User: 🦁")
 
     def _chat_input(self):
         # promptForAI = st.chat_input(placeholder="Enter your request here")
         promptForAI = st.text_input("Enter your request here")
         if promptForAI:
             st.session_state.prompt = promptForAI # type: ignore
-            asyncio.run(chatWAI(promptForAI))    
+            asyncio.run(chatWAI(promptForAI))  
+
+    @property
+    def aiQuestion(self):
+        return self._aiQuestion # type: ignore
+    
+    @aiQuestion.setter
+    def aiQuestion(self):
+        for msg in st.session_state.chat_responses:
+            if 'QUESTION' in msg:
+                pass
 
     def inititate_chat(self, promptForAI):
         st.session_state.prompt = prompts[self.selected_prompt] # type: ignore
@@ -135,6 +187,13 @@ class StreamlitChatPage(StreamlitPage):
             if self.run_button:
                 st.session_state.prompt = prompts[self.selected_prompt] # type: ignore
                 asyncio.run(chatWAI(st.session_state.prompt))
+        
+        with self.tab2:
+            self._top_page()
+            # st.markdown(st.session_state.chat_responses[-1]["content"])
+            st.markdown('## Analytic Question:\n\n' + self.ai_question)
+            st.markdown('## Python Script:\n\n' + self.ai_code)
+            st.markdown('## Answer:\n\n' + self.ai_answer)
 
 cp = StreamlitChatPage(page_title='📈💬 OpenAI Powered Analytics')
 cp.initialize()  
