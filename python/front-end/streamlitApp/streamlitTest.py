@@ -1,6 +1,8 @@
 import streamlit as st
+from code_editor import code_editor
 import asyncio
 import json
+import requests as re
 
 import aiohttp
 
@@ -67,47 +69,8 @@ class StreamlitChatPage(StreamlitPage):
                 if 'ANSWER' in chat["content"]:
                     self._ai_response["answer"] = chat["content"].split('ANSWER:')[1]
                     break
-
-    @property
-    def ai_question(self):
-        return self._ai_question # type: ignore
     
-    @ai_question.setter
-    def ai_question(self, value):
-        self._ai_question = value
-        if 'chat_responses' in st.session_state.keys() and len(st.session_state.chat_responses) > 0:
-            for chat in st.session_state.chat_responses:
-                if 'QUESTION' in chat["content"]:
-                    self._ai_question = chat["content"].split('QUESTION:')[1].split('PYTHON SCRIPT')[0]
-                    break
-
-    @property
-    def ai_code(self):
-        return self._ai_code # type: ignore
-    
-    @ai_code.setter
-    def ai_code(self, value):
-        self._ai_code = value
-        if 'chat_responses' in st.session_state.keys() and len(st.session_state.chat_responses) > 0:
-            for chat in st.session_state.chat_responses:
-                if 'PYTHON' in chat["content"]:
-                    self._ai_code = chat["content"].split('PYTHON SCRIPT:')[1].split('ANSWER')[0]
-                    break
-
-    @property
-    def ai_answer(self):
-        return self._ai_answer # type: ignore
-    
-    @ai_answer.setter
-    def ai_answer(self, value):
-        self._ai_answer = value
-        if 'chat_responses' in st.session_state.keys() and len(st.session_state.chat_responses) > 0:
-            for chat in st.session_state.chat_responses:
-                if 'ANSWER' in chat["content"]:
-                    self._ai_answer = chat["content"].split('ANSWER:')[1]
-                    break
-    
-    def _top_page(self):    
+    def _top_ai_page(self):    
         header = st.container()
         header.title('📈💬 OpenAI Powered Analytics', help="AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")
 
@@ -187,7 +150,6 @@ class StreamlitChatPage(StreamlitPage):
         async with aiohttp.ClientSession() as session:
             async with session.post(URL, data={'prompt': promptForAI}) as r:
                 async for line in r.content:
-                    # line = line.replace(b'"', b'\\\'')
                     formatted_line = line.replace(b'"', b'\\\'').decode('utf-8').replace("'",'"')                
                     try:
                         content = json.loads(formatted_line)["content"]
@@ -203,7 +165,7 @@ class StreamlitChatPage(StreamlitPage):
 
     def initialize(self):
         with self.tab1:
-            self._top_page()        
+            self._top_ai_page()        
             self._build_menu()
             
             self._populate_chat()  
@@ -215,20 +177,9 @@ class StreamlitChatPage(StreamlitPage):
                     st.session_state.prompt = self.promptForAI # type: ignore
                     asyncio.run(self.chatWAI(st.session_state.prompt))
                 else:
-                    st.alert('Enter a Prompt!')
+                    st.alert('Enter a Prompt!') # type: ignore
         
         with self.tab2:
-            # self._top_page()
-            
-            # call setters
-            # self.ai_question = 'No Question Yet Submitted'
-            # self.ai_code = 'No Python Yet Generated'
-            # self.ai_answer = "No AI Answer Yet Generated"
-
-            # st.markdown('## Analytic Question:\n\n' + self.ai_question)
-            # st.markdown('## Python Script:\n\n' + self.ai_code)
-            # st.markdown('## Answer:\n\n' + self.ai_answer)
-
             self.ai_response = {
                             "question": 'No Question Yet Submitted',
                             "code": 'No Code Yet Generated',
@@ -237,6 +188,18 @@ class StreamlitChatPage(StreamlitPage):
             st.markdown('## Analytic Question:\n\n' + self.ai_response["question"])
             st.markdown('## Python Script:\n\n' + self.ai_response["code"])
             st.markdown('## Answer:\n\n' + self.ai_response["answer"])
+        
+        with self.tab3:
+            run_python_form = st.form("Run Python")
+            with run_python_form:
+                st.markdown("## Python Script")
+                response_dict = code_editor(self.ai_response["code"])
+                run_python_button = st.form_submit_button("Run Python")
+                if run_python_button:
+                    print('here')
+                    response = re.post('http://127.0.0.1:5000/runPython', json={'pythonScript': self.ai_response["code"].replace('```python', '').replace('```', '').replace('```python', '')})
+                    print('here2')
+                    st.write(response.text)
 
 cp = StreamlitChatPage(page_title='📈💬 OpenAI Powered Analytics')
 cp.initialize()  

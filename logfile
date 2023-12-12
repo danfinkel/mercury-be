@@ -1,0 +1,4 @@
+2023-12-11 09:08:02.367 EST [23414] FATAL:  lock file "postmaster.pid" already exists
+2023-12-11 09:08:02.367 EST [23414] HINT:  Is another postmaster (PID 9030) running in data directory "/Users/danfinkel/.postgres"?
+2023-12-11 09:08:31.339 EST [28487] FATAL:  lock file "postmaster.pid" already exists
+2023-12-11 09:08:31.339 EST [28487] HINT:  Is another postmaster (PID 9030) running in data directory "/Users/danfinkel/.postgres"?

@@ -1,4 +1,5 @@
 from python.engines.adTechAssistant import runAdTechAI
+from python.tools.helpers import run_python
 
 from flask import Flask, request
 app = Flask(__name__)
@@ -36,3 +37,11 @@ def executeAI():
     if prompt is None:
         prompt = request.get_json().get('prompt', None)
     return runAdTechAI(prompt)
+
+@app.route('/runPython', methods=['POST']) # type: ignore
+def runPython():
+    pythonScript = request.form.get("pythonScript")
+    if pythonScript is None:
+        pythonScript = request.get_json().get('pythonScript', None)
+    print(pythonScript)
+    return run_python(pythonScript)

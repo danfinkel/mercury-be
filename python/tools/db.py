@@ -110,8 +110,19 @@ class PostgresDatabase:
             cursor.close()
             return [row[0] for row in result]
 
+    def get_sample_table_data(self, table_name):
+        import pandas as pd
+
+        if self.conn:
+            cursor = self.conn.cursor(cursor_factory=RealDictCursor)
+            cursor.execute(f"SELECT * FROM {self.schema}.{table_name} LIMIT 10")
+            results = cursor.fetchall()
+            cursor.close()
+            return pd.DataFrame(results).to_markdown()
+
     def get_table_definitions_for_prompt(self):
         table_names = self.get_all_table_names()
         if table_names:
             table_definitions = [self.get_table_definition(table_name) for table_name in table_names]
+            # table_definitions = [self.get_table_definition(table_name)  + f'\n Sample Data for {table_name}:\n' + self.get_sample_table_data(table_name) for table_name in table_names]
             return "\n\n".join(table for table in table_definitions if table is not None)

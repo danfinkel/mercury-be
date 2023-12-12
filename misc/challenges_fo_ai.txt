@@ -1,10 +1,15 @@
 1. Time series -- easy for AI to make logic mistakes trying to write queries that aggregate across time series effectively
+
 2. Q: When a column in data is categorical how can the AI learn the values and label them to common understanding. Ex: M == male and F == female
     eg. -> "Who saw more ads, men or women?" vs "Which gender saw the most ads?"
    User mistake: Assume AI can map categorical variables into human terms
 
+3. AI doesn't seem great at reviewing its code/results. Hard prompts needed so that AI finds bugs
+
 
 User mistakes w AI:
+- User assumes AI knows the schemas of the data
+    ----> Enrich the prompt with db schemas
 - AI is more adept w time series than it actually is.
     ---> How to make smarter about typical use cases for time series?
 - Assume AI can map categorical variables into human terms
