@@ -14,3 +14,7 @@
 2023-12-12 19:53:13.095 EST [78881] HINT:  Is another postmaster (PID 9030) running in data directory "/Users/danfinkel/.postgres"?
 2023-12-12 19:56:44.302 EST [81891] FATAL:  lock file "postmaster.pid" already exists
 2023-12-12 19:56:44.302 EST [81891] HINT:  Is another postmaster (PID 9030) running in data directory "/Users/danfinkel/.postgres"?
+2023-12-13 21:57:05.361 EST [30346] FATAL:  lock file "postmaster.pid" already exists
+2023-12-13 21:57:05.361 EST [30346] HINT:  Is another postmaster (PID 3246) running in data directory "/Users/danfinkel/.postgres"?
+2023-12-13 21:57:28.358 EST [36019] FATAL:  lock file "postmaster.pid" already exists
+2023-12-13 21:57:28.358 EST [36019] HINT:  Is another postmaster (PID 3246) running in data directory "/Users/danfinkel/.postgres"?
