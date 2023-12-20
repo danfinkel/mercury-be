@@ -76,9 +76,7 @@ class MemoStore:
             print(
                     "\nINPUT-OUTPUT PAIR ADDED TO VECTOR DATABASE:\n  ID\n    {}\n  INPUT\n    {}\n  OUTPUT\n    {}".format(
                         self.last_memo_id, input_text, output_text
-                    ),
-                    "light_green",
-            )
+            ))
         if self.verbosity >= 3:
             self.list_memos()
 

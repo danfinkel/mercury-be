@@ -1,4 +1,4 @@
-from python.engines.adTechAssistant import runAdTechAI
+from python.engines.adTechAssistant import runAdTechAI, runTeachableAI
 from python.tools.helpers import run_python
 
 from flask import Flask, request
@@ -34,9 +34,14 @@ def get_index():
 @app.route('/promptAI', methods=['POST']) # type: ignore
 def executeAI():
     prompt = request.form.get("prompt")
+    useTeachableAI = request.form.get("useTeachableAI", False)
     if prompt is None:
         prompt = request.get_json().get('prompt', None)
-    return runAdTechAI(prompt)
+        useTeachableAI = request.get_json().get("useTeachableAI", False)
+    print(f"prompt is: {prompt}")
+    print(f"useTeachableAI is: {useTeachableAI}")
+
+    return runAdTechAI(prompt, useTeachableAI) # type: ignore
 
 @app.route('/runPython', methods=['POST']) # type: ignore
 def runPython():
@@ -45,3 +50,20 @@ def runPython():
         pythonScript = request.get_json().get('pythonScript', None)
     print(pythonScript)
     return run_python(pythonScript)
+
+@app.route('/teachAI', methods=['POST']) # type: ignore
+def teachAI():
+    print('teaching ai api')
+    prompt = request.form.get("prompt")
+    thread_id = request.form.get("thread_id", '')
+    save_result = request.form.get("save_result", False)
+
+    print(f"thread_id is: {thread_id}")
+    print(f"prompt is: {prompt}")
+    print(f"save_result is: {save_result}")
+    if prompt is None:
+        prompt = request.get_json().get('prompt', None)
+        thread_id = request.get_json().get("thread_id", '')
+        save_result = request.get_json().get("save_result", False)
+
+    return runTeachableAI(prompt, thread_id, save_result) # type: ignore

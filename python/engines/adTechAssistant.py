@@ -1,4 +1,6 @@
+from sympy import use
 from ..tools.turbo4 import Turbo4
+from ..tools.teachable import Teachable_Turbo4
 from ..tools.llmtypes import Chat, TurboTool
 from ..tools import rand
 from ..tools.instruments import AgentInstruments
@@ -39,10 +41,13 @@ custom_function_tool_config = {
     },
 }
 
-def runAdTechAI(raw_prompt):
+def runAdTechAI(raw_prompt, useTeachableAI: bool = False):
     assistant_name = "Turbo4"
-
-    assistant = Turbo4()
+    if useTeachableAI:
+        assistant= Teachable_Turbo4()
+        lessons_list = assistant.memo_store.get_related_memos(raw_prompt, n_results=3, threshold=2.5)
+    else:
+        assistant = Turbo4()
 
     # session_id = rand.generate_session_id(assistant_name + raw_prompt)
     # agent_instruments = AgentInstruments(session_id=session_id)
@@ -65,6 +70,14 @@ def runAdTechAI(raw_prompt):
         table_definitions # type: ignore
     )    
 
+    if useTeachableAI:
+        prompt = add_cap_ref(
+            prompt,  # type: ignore
+            f"\n\nFinally, here are some lessons on this topic provided by previous users.", 
+            'PREVIOUS LESSONS',
+            lessons_list # type: ignore
+        )    
+
     prompt += '\n\n The database connection parameters can be found in env variables:\nhost: RENDER_PG_HOST\ndatabase: RENDER_PG_NAME\nusername: RENDER_PG_USER\npassword: RENDER_PG_PASSWORD'
 
     print('***** 1')
@@ -81,7 +94,7 @@ def runAdTechAI(raw_prompt):
     assistant = assistant.equip_tools(ai_tools) # type: ignore
     
     print('***** 4')
-    assistant = assistant.make_thread()
+    assistant, thread_id = assistant.make_thread()
     
     print('***** 5')
     assistant, prompt_msg = assistant.add_message(prompt)
@@ -144,3 +157,47 @@ def runAdTechAI(raw_prompt):
     # )
 
     # return prompt
+
+def runTeachableAI(latest_prompt: str, thread_id: str = '', save_result: bool = False):
+    """
+    This function will return once the user types 'exit'.
+    """
+
+    assistant_name = "Roger"
+    roger = Teachable_Turbo4()
+    
+    print('***** 1')
+    roger, status_msg = roger.get_or_create_assistant(assistant_name)
+    if thread_id == '':
+        yield status_msg
+    time.sleep(1)
+
+    if thread_id == '':
+        print('***** 2')
+        roger, instruct_msg = roger.set_instructions("You are an assistant data scientist that specializes in adtech measurement. We are going to work together to build some detailed descriptions of common measurement tasks in advertising tech. Our goal is to create descriptions that will help future AI assistants when the user provides vague or incomplete prompts.") # type: ignore
+        yield instruct_msg
+        time.sleep(1)
+        
+        print('***** 3a')
+        roger, thread_id = roger.make_thread()
+        yield str({"user": "sys_internal", "thread_id": thread_id, "content": ""}) + "\n"
+    else:
+        print('***** 3b')
+        roger.current_thread_id = thread_id
+    
+    print('***** 4')
+    roger, prompt_msg = roger.add_message(latest_prompt)
+
+    print('***** 5')
+    roger, new_msgs = roger.run_thread()
+    for msg in new_msgs:
+        yield str({"user": "dan", "thread_id": thread_id, "content": msg.message}) + "\n"
+
+    print('***** 6')
+    if save_result:
+        for msg in new_msgs:
+            if 'SUMMARY' in msg.message:
+                roger, save_msg = roger.save_lesson(msg.message) # type: ignore
+                break
+
+

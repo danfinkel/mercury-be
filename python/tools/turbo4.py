@@ -197,6 +197,8 @@ class Turbo4:
 
         self.published_messages.append(create_msg)
         return self, str({"user": create_msg.from_name, 
+                          "assistant_name": name,
+                          "assistant_id": self.assistant_id,
                           "content": create_msg.message}) + "\n"
 
     def set_instructions(self, instructions: str):
@@ -219,6 +221,7 @@ class Turbo4:
         self.published_messages.append(instruction_msg)
 
         return self, str({"user": instruction_msg.from_name, 
+                          "assistent_id": self.assistant_id,
                           "content": instruction_msg.message}) + "\n"                
 
     def equip_tools(
@@ -252,7 +255,7 @@ class Turbo4:
         response = self.client.beta.threads.create()
         self.current_thread_id = response.id
         self.thread_messages = []
-        return self
+        return self, response.id
 
     def add_message(self, message: str, refresh_threads: bool = False):
         print(f"add_message({message})")
@@ -272,6 +275,8 @@ class Turbo4:
         self.published_messages.append(msg_to_ai)
 
         return self, str({"user": msg_to_ai.from_name, 
+                          "assistant_id": self.assistant_id,
+                          "thread_id": self.current_thread_id,
                           "content": msg_to_ai.message}) + "\n"
 
     def load_threads(self):

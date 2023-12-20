@@ -1,3 +1,4 @@
+from openai import chat
 import streamlit as st
 from code_editor import code_editor
 import asyncio
@@ -6,9 +7,24 @@ import requests as re
 
 import aiohttp
 
+STICKY_HEADER = """
+        <style>
+            div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
+                position: sticky;
+                top: 2.875rem;
+                background-color: #0f1117;
+                z-index: 999;
+            }
+            .fixed-header {
+                border-bottom: 1px solid black;
+            }
+        </style>
+            """
+
 CHAT_ICONS = {
     "dan": "⛹️",
     "Engineer": "⛹️",
+    "Student": "👩‍🎓",
     "databaseAdmin": "🖥️",
     "user": "🦁",
     "sys_admin": "🔧",
@@ -16,13 +32,30 @@ CHAT_ICONS = {
 }
 
 # URL = 'https://mercury-jzz5.onrender.com/promptAI'
-URL = "http://127.0.0.1:5000/promptAI"
+PROMPT_URL = "http://127.0.0.1:5000/promptAI"
+TEACHING_URL = "http://127.0.0.1:5000/teachAI"
 
 prompts = {'reach': 'How many users saw an ad?',
            '7-Day Daily Reach': 'Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023',
            'impressions': 'How many ads were served?',
            'lift': 'What was the lift of the campaign?'
            }
+
+LEARNING_PROMPT = """This is very helpful thank you! 
+I would like to format your recommendation so that I can store
+it to enhance future prompts to AI. Can you respond to this prompt
+by providing
+
+1. A short, concise and detailed summary of your instructions. This summary
+should be approximately ten words and will be used to determine if your instructions
+should be added to a future AI prompt. Please precede your summary with the text "SUMMARY:" 
+so I can easily find it.
+
+2. Your best set of instructions. Please precede your instructions with the 
+text "INSTRUCTIONS:" so I can easily find them.
+
+Thank you!
+"""
 
 
 class StreamlitPage():
@@ -41,8 +74,14 @@ class StreamlitChatPage(StreamlitPage):
     def __init__(self, page_title):
         super().__init__(page_title) # type: ignore        
 
-        st.set_page_config(page_title=self.page_title)
-        self.tab1, self.tab2, self.tab3, self.tab4, self.tab5 = st.tabs(["AI Chat", "Summary", "Run Python Code", "Audit Results", "Save for Reuse"])
+        st.set_page_config(page_title=self.page_title)        
+        self.tabs = st.tabs(["AI Chat", 
+                             "Summary", 
+                             "Run Python Code", 
+                             "Audit Results", 
+                             "Save for Reuse",
+                             "Teach Your Assistant"]
+                            )
         self.ai_question = 'No Question Yet Submitted'
         self.ai_code = 'No Python Yet Generated'
         self.ai_answer = "No AI Answer Yet Generated"
@@ -52,7 +91,7 @@ class StreamlitChatPage(StreamlitPage):
                             "code": 'No Code Yet Generated',
                             "answer": 'No AI Answer Has Been Created'
                             }
-
+        
     @property
     def ai_response(self):
         return self._ai_response
@@ -69,32 +108,40 @@ class StreamlitChatPage(StreamlitPage):
                 if 'ANSWER' in chat["content"]:
                     self._ai_response["answer"] = chat["content"].split('ANSWER:')[1]
                     break
-    
-    def _top_ai_page(self):    
-        header = st.container()
-        header.title('📈💬 OpenAI Powered Analytics', help="AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")
 
-        form = header.form("my_form")
-        self.promptForAI = form.text_input("Hey 🦁 enter your request here", key="text")
-        self.runAI = form.form_submit_button("Submit")
+    def _top_teaching_page(self):    
+        header = st.container()
+        header.title('📈💬 Mercury AI - Classroom 📚', help="AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")
+
+        teaching_form = header.form("my_teaching_form")
+        self.promptForTeaching = teaching_form.text_area("Hey 🦁 Talk to Roger", key="teaching_input", height=150)
+        col1, col2 = teaching_form.columns([.15,1])
+        self.runTeaching = col1.form_submit_button("Submit")
+        self.storeLesson = col2.form_submit_button("Summarize and Store")
 
         header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
 
         ### Custom CSS for the sticky header
         st.markdown(
-            """
-        <style>
-            div[data-testid="stVerticalBlock"] div:has(div.fixed-header) {
-                position: sticky;
-                top: 2.875rem;
-                background-color: #0f1117;
-                z-index: 999;
-            }
-            .fixed-header {
-                border-bottom: 1px solid black;
-            }
-        </style>
-            """,
+            STICKY_HEADER,
+            unsafe_allow_html=True
+        )    
+
+    def _top_ai_page(self):    
+        header = st.container()
+        header.title('📈💬 Mercury AI', help="AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")
+
+        learningform = header.form("my_form")
+        self.promptForAI = learningform.text_area("Hey 🦁 enter your request here", key="text")
+        colA, colB = learningform.columns([.15,1])
+        self.runAI = colA.form_submit_button("Submit")
+        self.useRoger = colB.toggle("Use Memory-Based AI", value=False, key="useRoger")
+
+        header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
+
+        ### Custom CSS for the sticky header
+        st.markdown(
+            STICKY_HEADER,
             unsafe_allow_html=True
         )            
         
@@ -103,14 +150,25 @@ class StreamlitChatPage(StreamlitPage):
 
     def _set_chat(self):
         if 'chat_responses' not in st.session_state:            
-            st.session_state.chat_responses = [{"chatName": "Engineer", "content": "Hello, I am your AI Assistant"}]
-            st.session_state.chat_responses.append({"chatName": "sys_admin", "content": "And I am System Admin that will help you work with your AI Assistant. How can we help you?"})
+            st.session_state.chat_responses = [{"chatName": "Engineer", "content": "Hello, I am your AI Assistant powered by Mecury Analytics"}]
+            st.session_state.chat_responses.append({"chatName": "sys_admin", "content": "And I am the System Admin that will help you work with your AI Assistant. How can we help you?"})
+
+    def _set_teachchat(self):
+        if 'teachchat_responses' not in st.session_state:            
+            st.session_state.teachchat_responses = [{"chatName": "Student", "content": "Hello, I am Roger. I am an AI Assistant that is here to learn"}]
+            st.session_state.teachchat_responses.append({"chatName": "Student", "content": "What topic should we learn about today? My goal is to work with you to create a summary of an adtech topic which can be used to enrich future prompts and improve overall AI performance."})
+
+    def _populate_teachchat(self):
+        self._set_teachchat()
+        for msg in st.session_state.teachchat_responses:
+            with st.chat_message(name=msg["chatName"], avatar=CHAT_ICONS.get(msg["chatName"])):
+                st.write(str(msg["content"]))
 
     def _populate_chat(self):
         self._set_chat()
         for msg in st.session_state.chat_responses:
             with st.chat_message(name=msg["chatName"], avatar=CHAT_ICONS.get(msg["chatName"])):
-                st.write(str(msg["content"]))
+                st.write(str(msg["content"]))                
 
     def _build_menu(self):
         with st.sidebar:
@@ -137,7 +195,11 @@ class StreamlitChatPage(StreamlitPage):
         st.session_state.text = None
 
 
-    async def chatWAI(self, promptForAI=st.session_state.get("prompt")):
+    async def chatWAI(self,
+                      promptForAI: str,  # type: ignore
+                      responses: list[dict],
+                      url: str,
+                      **kwargs):
         """
         Inspired by: https://stackoverflow.com/questions/59681726/how-to-read-lines-of-a-streaming-api-with-aiohttp-in-python
         and: https://stackoverflow.com/questions/74800726/running-asyncio-with-streamlit-dashboard
@@ -145,26 +207,45 @@ class StreamlitChatPage(StreamlitPage):
         """
         with st.chat_message(name='user', avatar=CHAT_ICONS.get('user')):
             st.write(promptForAI)
-            st.session_state.chat_responses.append({"chatName": 'user', "content": promptForAI})    
+            responses.append({"chatName": 'user', "content": promptForAI})    
 
         async with aiohttp.ClientSession() as session:
-            async with session.post(URL, data={'prompt': promptForAI}) as r:
+            print(f"Active thread is: {st.session_state.get('active_thread_id', '')}")
+            data_dict = {
+                    "prompt": promptForAI, 
+                    "thread_id": st.session_state.get('active_thread_id', '')
+                    }
+            data_dict.update(kwargs)
+            print(data_dict)
+            async with session.post(url, data=data_dict) as r: # type: ignore
                 async for line in r.content:
-                    formatted_line = line.replace(b'"', b'\\\'').decode('utf-8').replace("'",'"')                
+                    formatted_line = line.replace(b'"', b'\\\'').decode('utf-8').replace("'",'"')                    
                     try:
-                        content = json.loads(formatted_line)["content"]
-                        chatName = json.loads(formatted_line)["user"]
+                        content = json.loads(formatted_line).get("content")
+                        chatName = json.loads(formatted_line).get("user")
                     except json.decoder.JSONDecodeError:
                         print('ERROR ERROR ERROR')
                         print(line)
-                        content = str(formatted_line.split('"content": ')[1].split('}\n')[0])
-                        chatName = str(formatted_line.split('"user": ')[1]).split(', "content')[0]
-                    with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
-                        st.write(str(content))
-                        st.session_state.chat_responses.append({"chatName": chatName, "content": str(content)})
+                        # content = str(formatted_line.split('"content": ')[1].split('}\n')[0])
+                        # content = formatted_line.split('"content": \\"')[1].split('\\"}\n')[0]
+
+                        formatted_line = line.decode('utf-8')
+                        content = formatted_line.split("""content""")[1][4:][:-3].replace('\\n','\n').replace('\\\\','\\')
+                        chatName = formatted_line.split('user')[1].split(',')[0][4:][:-1]
+
+                        # chatName = formatted_line.split('"user": ')[1].split(',')[0].replace('"','')
+                        print(chatName)
+                    if chatName != 'sys_internal':
+                        with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
+                            st.write(str(content))
+                            responses.append({"chatName": chatName, "content": str(content)})
+                    else:
+                        print(f'here for active_thread_id {json.loads(formatted_line)["thread_id"]}')
+                        st.session_state.active_thread_id = json.loads(formatted_line)["thread_id"]
+                        print(f"just set active thread id to be {st.session_state.active_thread_id}")
 
     def initialize(self):
-        with self.tab1:
+        with self.tabs[0]:
             self._top_ai_page()        
             self._build_menu()
             
@@ -175,11 +256,15 @@ class StreamlitChatPage(StreamlitPage):
             if self.runAI:
                 if self.promptForAI != '':
                     st.session_state.prompt = self.promptForAI # type: ignore
-                    asyncio.run(self.chatWAI(st.session_state.prompt))
+                    print(f"self.useRoger is: {self.useRoger}")
+                    asyncio.run(self.chatWAI(st.session_state.prompt, 
+                                             responses=st.session_state.chat_responses,
+                                             url=PROMPT_URL,
+                                             useTeachableAI = st.session_state.get("useRoger", False)))
                 else:
-                    st.alert('Enter a Prompt!') # type: ignore
+                    st.warning('Enter a Prompt!') # type: ignore
         
-        with self.tab2:
+        with self.tabs[1]:
             self.ai_response = {
                             "question": 'No Question Yet Submitted',
                             "code": 'No Code Yet Generated',
@@ -189,7 +274,7 @@ class StreamlitChatPage(StreamlitPage):
             st.markdown('## Python Script:\n\n' + self.ai_response["code"])
             st.markdown('## Answer:\n\n' + self.ai_response["answer"])
         
-        with self.tab3:
+        with self.tabs[2]:
             run_python_form = st.form("Run Python")
             with run_python_form:
                 st.markdown("## Python Script")
@@ -200,6 +285,34 @@ class StreamlitChatPage(StreamlitPage):
                     response = re.post('http://127.0.0.1:5000/runPython', json={'pythonScript': self.ai_response["code"].replace('```python', '').replace('```', '').replace('```python', '')})
                     print('here2')
                     st.write(response.text)
+        
+        with self.tabs[5]:
+            self._top_teaching_page()
+            self._populate_teachchat()
 
-cp = StreamlitChatPage(page_title='📈💬 OpenAI Powered Analytics')
+            if self.runTeaching:
+                if self.promptForTeaching != '':
+                    st.session_state.teachingPrompt = self.promptForTeaching # type: ignore                    
+                    self.promptForTeaching = ''
+
+                    print(f"prompt is: {st.session_state.teachingPrompt}")                    
+                    asyncio.run(self.chatWAI(st.session_state.teachingPrompt, 
+                                             responses=st.session_state.teachchat_responses,
+                                             url=TEACHING_URL))
+
+                else:
+                    st.warning('Say Something!') # type: ignore
+
+            if self.storeLesson:
+                print(len(st.session_state.teachchat_responses))
+                if st.session_state.get('active_thread_id', '') == '':
+                    st.warning('You have to chat before you can store a lesson!') # type: ignore
+                else:
+                    asyncio.run(self.chatWAI(LEARNING_PROMPT, 
+                                             responses=st.session_state.teachchat_responses,
+                                             url=TEACHING_URL,
+                                             save_result=True))
+
+
+cp = StreamlitChatPage(page_title='📈💬 Mercury AI')
 cp.initialize()  
