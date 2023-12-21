@@ -129,7 +129,7 @@ class StreamlitChatPage(StreamlitPage):
 
     def _top_ai_page(self):    
         header = st.container()
-        header.title('📈💬 Mercury AI', help="AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")
+        header.title('📈💬 Mercury AI - Problem Solving', help="AI Enabled Agents Prompted to Solve Data Science Tasks. This application is pointed at a Postgres database with a set of (fake) exposures for an advertising campaign for Bob's Hamburgers. There is also a (fake) conversions file and a (fake) universe file.")
 
         learningform = header.form("my_form")
         self.promptForAI = learningform.text_area("Hey 🦁 enter your request here", key="text")
