@@ -163,17 +163,18 @@ def runTeachableAI(latest_prompt: str, thread_id: str = '', save_result: bool = 
     """
     This function will return once the user types 'exit'.
     """
+    new_thread = True if thread_id == '' else False
 
     assistant_name = "Roger"
     roger = Teachable_Turbo4()
     
     print('***** 1')
     roger, status_msg = roger.get_or_create_assistant(assistant_name)
-    if thread_id == '':
+    if new_thread:
         yield status_msg
     time.sleep(1)
 
-    if thread_id == '':
+    if new_thread:
         print('***** 2')
         roger, instruct_msg = roger.set_instructions("You are an assistant data scientist that specializes in adtech measurement. We are going to work together to build some detailed descriptions of common measurement tasks in advertising tech. Our goal is to create descriptions that will help future AI assistants when the user provides vague or incomplete prompts.") # type: ignore
         yield instruct_msg
@@ -191,9 +192,13 @@ def runTeachableAI(latest_prompt: str, thread_id: str = '', save_result: bool = 
 
     print('***** 5')
     roger, new_msgs = roger.run_thread()
-    for msg in new_msgs:
-        yield str({"user": "dan", "thread_id": thread_id, "content": msg.message}) + "\n"
-
+    if new_thread:
+        for msg in new_msgs:
+            yield str({"user": "dan", "thread_id": thread_id, "content": msg.message}) + "\n"
+    else:
+        # new_msgs isnt reliable -- TODO: fix this
+        yield str({"user": "dan", "thread_id": thread_id, "content": new_msgs[0].message}) + "\n"
+        
     print('***** 6')
     if save_result:
         for msg in new_msgs:
