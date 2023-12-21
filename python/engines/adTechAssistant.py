@@ -33,7 +33,7 @@ custom_function_tool_config = {
     "type": "function",
     "function": {
         "name": "run_python",
-        "description": "A function that executes a python script locally.",
+        "description": "A function that executes a python script. If you pass in a string, it will be executed as a python script.",
         "parameters": {
             "type": "object",
             "properties": {"pythonScript": {"type": "string"}},
@@ -43,6 +43,7 @@ custom_function_tool_config = {
 
 def runAdTechAI(raw_prompt, useTeachableAI: bool = False):
     assistant_name = "Turbo4"
+    print(f"useTeachableAI is: {useTeachableAI} and its type is {type(useTeachableAI)}")
     if useTeachableAI:
         assistant= Teachable_Turbo4()
         lessons_list = assistant.memo_store.get_related_memos(raw_prompt, n_results=3, threshold=2.5)
@@ -65,7 +66,7 @@ def runAdTechAI(raw_prompt, useTeachableAI: bool = False):
 
     prompt = add_cap_ref(
         prompt,  # type: ignore
-        f"\n\nUse these {POSTGRES_TABLE_DEFINITION_CAP_REF} to get data to support the analysis.", 
+        f"\n\nThe data you need to execute the task can be found in a postgres database with {POSTGRES_TABLE_DEFINITION_CAP_REF} described below.", 
         POSTGRES_TABLE_DEFINITION_CAP_REF, 
         table_definitions # type: ignore
     )    
@@ -78,7 +79,7 @@ def runAdTechAI(raw_prompt, useTeachableAI: bool = False):
             lessons_list # type: ignore
         )    
 
-    prompt += '\n\n The database connection parameters can be found in env variables:\nhost: RENDER_PG_HOST\ndatabase: RENDER_PG_NAME\nusername: RENDER_PG_USER\npassword: RENDER_PG_PASSWORD'
+    prompt += '\n\n To connect to the postgres database with the relevent datasets you can use the following env variables:\nhost: RENDER_PG_HOST\ndatabase: RENDER_PG_NAME\nusername: RENDER_PG_USER\npassword: RENDER_PG_PASSWORD'
 
     print('***** 1')
     assistant, status_msg = assistant.get_or_create_assistant(assistant_name)

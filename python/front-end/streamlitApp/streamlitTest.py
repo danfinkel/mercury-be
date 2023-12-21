@@ -135,7 +135,7 @@ class StreamlitChatPage(StreamlitPage):
         self.promptForAI = learningform.text_area("Hey 🦁 enter your request here", key="text")
         colA, colB = learningform.columns([.15,1])
         self.runAI = colA.form_submit_button("Submit")
-        self.useRoger = colB.toggle("Use Memory-Based AI", value=False, key="useRoger")
+        self.useRoger = colB.toggle("Use Memory-Enhanced AI", value=False, key="useRoger")        
 
         header.write("""<div class='fixed-header'/>""", unsafe_allow_html=True)
 
@@ -211,30 +211,32 @@ class StreamlitChatPage(StreamlitPage):
 
         async with aiohttp.ClientSession() as session:
             print(f"Active thread is: {st.session_state.get('active_thread_id', '')}")
+
             data_dict = {
                     "prompt": promptForAI, 
                     "thread_id": st.session_state.get('active_thread_id', '')
                     }
             data_dict.update(kwargs)
-            print(data_dict)
+
             async with session.post(url, data=data_dict) as r: # type: ignore
                 async for line in r.content:
                     formatted_line = line.replace(b'"', b'\\\'').decode('utf-8').replace("'",'"')                    
                     try:
+                        # try to extract content and user from the json
                         content = json.loads(formatted_line).get("content")
                         chatName = json.loads(formatted_line).get("user")
+
                     except json.decoder.JSONDecodeError:
+
+                        # json decoder didnt work so fish out the
+                        # content and chat name
                         print('ERROR ERROR ERROR')
                         print(line)
-                        # content = str(formatted_line.split('"content": ')[1].split('}\n')[0])
-                        # content = formatted_line.split('"content": \\"')[1].split('\\"}\n')[0]
 
                         formatted_line = line.decode('utf-8')
                         content = formatted_line.split("""content""")[1][4:][:-3].replace('\\n','\n').replace('\\\\','\\')
                         chatName = formatted_line.split('user')[1].split(',')[0][4:][:-1]
 
-                        # chatName = formatted_line.split('"user": ')[1].split(',')[0].replace('"','')
-                        print(chatName)
                     if chatName != 'sys_internal':
                         with st.chat_message(name=chatName, avatar=CHAT_ICONS.get(chatName)):
                             st.write(str(content))
@@ -256,7 +258,7 @@ class StreamlitChatPage(StreamlitPage):
             if self.runAI:
                 if self.promptForAI != '':
                     st.session_state.prompt = self.promptForAI # type: ignore
-                    print(f"self.useRoger is: {self.useRoger}")
+                    print(f"self.useRoger is: {st.session_state.get('useRoger', False)}")
                     asyncio.run(self.chatWAI(st.session_state.prompt, 
                                              responses=st.session_state.chat_responses,
                                              url=PROMPT_URL,

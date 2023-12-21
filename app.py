@@ -34,10 +34,10 @@ def get_index():
 @app.route('/promptAI', methods=['POST']) # type: ignore
 def executeAI():
     prompt = request.form.get("prompt")
-    useTeachableAI = request.form.get("useTeachableAI", False)
+    useTeachableAI = request.form.get("useTeachableAI", 'False') != 'False'
     if prompt is None:
         prompt = request.get_json().get('prompt', None)
-        useTeachableAI = request.get_json().get("useTeachableAI", False)
+        useTeachableAI = request.get_json().get("useTeachableAI", 'False') != 'False'
     print(f"prompt is: {prompt}")
     print(f"useTeachableAI is: {useTeachableAI}")
 

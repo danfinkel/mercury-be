@@ -191,7 +191,7 @@ class Turbo4:
         create_msg = Chat(
                 from_name="sys_admin",
                 to_name="front_end",
-                message=f"Good news you have created an assistant named {name}",
+                message=f"Good news you have created an AI assistant named {name}",
                 created=date.today().strftime('%Y-%m-%d'), # type: ignore
         )
 
