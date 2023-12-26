@@ -38,7 +38,8 @@ TEACHING_URL = "http://127.0.0.1:5000/teachAI"
 prompts = {'reach': 'How many users saw an ad?',
            '7-Day Daily Reach': 'Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023',
            'impressions': 'How many ads were served?',
-           'lift': 'What was the lift of the campaign?'
+           'lift': 'What was the lift of the campaign?',
+           '7-Day Daily Lift': 'Please report daily campaign lift where lift for a given day is defined to be the conversion rate of users exposed divided by the conversion rate of users unexposed to the ad campaign. Conversion rates utilize causality in that a user is considered converted only if they convert within 7 days of the date under evaluation. Perform the calculation for each day from August 1 2023 to September 1 2023.'
            }
 
 LEARNING_PROMPT = """This is very helpful thank you! 
@@ -280,13 +281,47 @@ class StreamlitChatPage(StreamlitPage):
             run_python_form = st.form("Run Python")
             with run_python_form:
                 st.markdown("## Python Script")
-                response_dict = code_editor(self.ai_response["code"])
+
+                # with open('/Users/danfinkel/github/mercury-be/python/front-end/streamlitApp/buttons.json') as json_button_file_alt:
+                #     btns = json.load(json_button_file_alt)                
+
+                btns = [{
+                "name": "Copy",
+                "feather": "Copy",
+                "alwaysOn": True,
+                "commands": ["copyAll"],
+                "style": {"top": "0.46rem", "right": "0.4rem"}
+                },
+                {
+                    "name": "Run",
+                    "feather": "Play",
+                    "primary": True,
+                    "hasText": True,
+                    "showWithIcon": True,
+                    "commands": ["submit"],
+                    "alwaysOn": True,
+                    "style": {"bottom": "0.44rem", "right": "0.4rem"}
+                },                
+                ]
+                    
+                response_dict = code_editor(self.ai_response["code"], 
+                                            lang="python", 
+                                            key="code_editor_demo", 
+                                            height = [19, 22],  # type: ignore
+                                            props = {"style": {"borderRadius": "0px 0px 8px 8px"}},
+                                            buttons=btns)
+                # if len(response_dict) > 0:
+                #     if "submit" in [r["type"] for r in response_dict]:
+                #         st.write('Run Pressed!')
                 run_python_button = st.form_submit_button("Run Python")
                 if run_python_button:
                     print('here')
-                    response = re.post('http://127.0.0.1:5000/runPython', json={'pythonScript': self.ai_response["code"].replace('```python', '').replace('```', '').replace('```python', '')})
+                    st.write(response_dict)
+                    st.write(st.session_state.get("code_editor_demo", "no code"))
+                    # response = re.post('http://127.0.0.1:5000/runPython', json={'pythonScript': self.ai_response["code"].replace('```python', '').replace('```', '').replace('```python', '')})
+                    # response = re.post('http://127.0.0.1:5000/runPython', json={'pythonScript': self.ai_response["code"].replace('```python', '').replace('```', '').replace('```python', '')})
                     print('here2')
-                    st.write(response.text)
+                    # st.write(response.text)
         
         with self.tabs[5]:
             self._top_teaching_page()

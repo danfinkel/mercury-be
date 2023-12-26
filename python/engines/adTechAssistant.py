@@ -92,7 +92,7 @@ def runAdTechAI(raw_prompt, useTeachableAI: bool = False):
     time.sleep(1)
 
     print('***** 3')
-    assistant = assistant.equip_tools(ai_tools) # type: ignore
+    assistant = assistant.equip_tools(ai_tools, equip_on_assistant=False) # type: ignore
     
     print('***** 4')
     assistant, thread_id = assistant.make_thread()

@@ -89,12 +89,10 @@ class Turbo4:
         cur = conn.cursor()       
         
         cur.execute(ins_stmt)
-        conn.commit()
 
+        conn.commit()
         cur.close()
         conn.close()
-
-        return self
 
         return self
 
@@ -241,6 +239,10 @@ class Turbo4:
             updated_assistant = self.client.beta.assistants.update(
                 tools=self.tool_config, assistant_id=self.assistant_id # type: ignore
             )
+
+        # updated_assistant = self.client.beta.assistants.update(
+        #     tools=[{"type": "code_interpreter"}], assistant_id=self.assistant_id #type: ignore
+        # )
 
         return self
 
