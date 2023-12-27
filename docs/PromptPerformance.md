@@ -1,11 +1,52 @@
 # Prompt Performance for AdTech Calculations
-## Summary
+An evaluation of the performance of good, bad and enhanced AI prompts for typical adtech measurements.
 ## Introduction
+AI agents and assistants are now capable of writing analytic code. Companies like Open AI, Meta and Google host their latest LLMs and offer APIs to work with them. It is very easy to prompt these tools with analytics questions and receive back code scripts that execute
+and return results from datasets.
 
+However, there is no guarantee that the code provided by LLMs provides an answer to the envisioned question of the requestor.
+
+For this report we look at some common adtech measurements on a toy dataset. We compare the performance of different prompts in increasingly complex measurement tasks with a focus on trying to improve the performance of the LLM by appending hints to the prompt. The goal is to find important hints that will turn a bad prompt into a good one.
 ### Workflow
+The software stack used for this example follows a traditional front-end / back-end architecture. 
+
+For this analysis the front-end was replaced with a jupyter notebook so we could quickly iterate over different approaches.
 ![image](workflow.png)
 
 ### Dataset
+
+Three tables of fake data were generated using `rand` in python/numpy and also using ChatGPT to generate names when needed.
+
+There are three tables in the Postgres database (currently hosted on Render).
+
+1. A `universe` table:
+
+| idx   |   userid |   weight | gender   |
+|-------|----------|----------|----------|
+|  0    |        1 |        1 | F        |
+|  1    |        2 |        1 | M        |
+|  2    |        3 |        1 | M        |
+|  3    |        4 |        1 | M        |
+
+2. A `conversions` table:
+
+|    |   conversionid |   userid | conversindate   |   conversionamt |
+|---:|---------------:|---------:|:----------------|----------------:|
+|  0 |              1 |     7281 | 2023-08-12      |       16.6145   |
+|  1 |              2 |     8138 | 2023-08-07      |       11.4012   |
+|  2 |              3 |     2510 | 2023-08-10      |       18.8951   |
+|  3 |              4 |     9444 | 2023-09-25      |        0.108674 |
+
+3. A `exposures` table:
+
+|    |   exposureid |   userid | exposuredate   | propertyname        | creativename                | daypart         | exposuretype   |
+|---:|-------------:|---------:|:---------------|:--------------------|:----------------------------|:----------------|:---------------|
+|  0 |            1 |     8237 | 2023-09-20     | Showtime            | Bobs Burger Bash            | Daytime         | DigitalVideo   |
+|  1 |            2 |     6231 | 2023-08-04     | NBCSN               | Bobs Best Burgers           | Late Night      | LinearTV       |
+|  2 |            3 |     3712 | 2023-08-25     | Cinemax             | Bobs Best Burgers           | Early Fringe    | StreamingApp   |
+|  3 |            4 |     5832 | 2023-09-16     | Discovery Channel   | Bite into Bobs              | Late Night      | LinearTV       |
+|  4 |            5 |      144 | 2023-09-26     | Lifetime            | Bobs Best Burgers           | Daytime         | SocialMedia    |
+|  5 |            6 |     6263 | 2023-09-15     | Syfy                | Delicious Burgers On-the-Go | Daytime         | SocialMedia    |
 
 ### Pipeline
 1. The user writes a prompt
