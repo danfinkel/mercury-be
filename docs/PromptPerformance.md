@@ -125,22 +125,22 @@ You should assume these variables are in the environment of the python script an
 Three prompts were tested and evaluated for correctness. The goal is to prompt AI to write a python script that executes a query against the database and determines that the total reach of the campaign was 9,999 users.
 
 The three tested are prompts are
-```
-1. How many users saw an ad?
-2. What is the total reach of the campaign?
-3. What is the total reach of the campaign?  
-   Here is a hint you can use to help answer 
+
+1. >How many users saw an ad?
+2. >What is the total reach of the campaign?
+3. >What is the total reach of the campaign?  
+   **Here is a hint you can use to help answer 
    the QUESTION. The total reach of an 
    advertising campaign is determined by 
    counting the number of distinct users who 
-   saw an ad.
-```
+   saw an ad.**
+
 ### Results
 | Prompt | Total Runs | Answer Returned | Correct Answer |
 |--------|------------|-----------------|----------------|
 | How many users saw an ad? | 20 | 19 | 19 (95%) |
 | What is the total reach of the campaign? | 20 | 20 | 4 (20%) |
-| What is the total reach of the campaign?  Here is a hint you can use to help answer the QUESTION. The total reach of an advertising campaign is determined by counting the number of distinct users who saw an ad. | 20 | 20 | 20 (100%) |
+| What is the total reach of the campaign?  **Here is a hint you can use to help answer the QUESTION. The total reach of an advertising campaign is determined by counting the number of distinct users who saw an ad.** | 20 | 20 | 20 (100%) |
 
 ### What Went Right/ Wrong?*
 
@@ -171,8 +171,15 @@ ON
 ```
 
 ## Time Series Reach
-**Prompt:**
-> Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023
+**Prompts:**
+1. > Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023
+
+2. > Please calculate daily campaign reach. Use a 7 day lookback window when determining the reach for a given day. Perform the calculation for each day from August 1 2023 to September 1 2023
+
+3. > Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
+**Here are some generalized hints you can use to help answer the QUESTION.
+HINT 1: When a user asks for reach with an n-day lookback window you should determine how many users saw an ad during the previous n days 
+HINT 2: The BETWEEN SQL function is inclusive of its bounds. That means that when using BETWEEN for an n day window calculation you should use n-1 days in the calculation.**
 
 ### Results
 | Prompt | Total Runs | Answer Returned | Correct Answer |
