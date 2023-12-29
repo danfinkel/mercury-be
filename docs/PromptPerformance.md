@@ -127,13 +127,16 @@ Three prompts were tested and evaluated for correctness. The goal is to prompt A
 The three tested are prompts are
 
 1. >How many users saw an ad?
+
 2. >What is the total reach of the campaign?
-3. >What is the total reach of the campaign?  
-   **Here is a hint you can use to help answer 
+3. <blockquote> What is the total reach of the campaign?  
+   
+   Here is a hint you can use to help answer 
    the QUESTION. The total reach of an 
    advertising campaign is determined by 
    counting the number of distinct users who 
-   saw an ad.**
+   saw an ad.
+   </blockquote>
 
 ### Results
 | Prompt | Total Runs | Answer Returned | Correct Answer |
@@ -256,6 +259,22 @@ with conn.cursor() as cursor:
         WHERE exposuredate BETWEEN %s AND %s
     """, (seven_days_ago, current_date))
     reach_count = cursor.fetchone()[0]
+```
+
+Another VERY common mistake is the AI includes the 
+exposuredate in the query and performs a `GROUP BY`
+on it: 
+```sql
+SELECT exposuredate, COUNT(DISTINCT userid) AS reach
+FROM campaign.exposures
+WHERE exposuredate BETWEEN %(start_date)s AND %(end_date)s
+AND userid IN (
+    SELECT DISTINCT userid
+    FROM campaign.exposures
+    WHERE exposuredate BETWEEN %(lookback_start)s AND %(lookback_end)s
+)
+GROUP BY exposuredate
+ORDER BY exposuredate
 ```
 
 Another mistake that AI makes is that it tries to
