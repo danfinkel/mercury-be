@@ -131,11 +131,11 @@ The three tested are prompts are
 2. >What is the total reach of the campaign?
 3. <blockquote> What is the total reach of the campaign?  
    
-   Here is a hint you can use to help answer 
+   **Here is a hint you can use to help answer 
    the QUESTION. The total reach of an 
    advertising campaign is determined by 
    counting the number of distinct users who 
-   saw an ad.
+   saw an ad.**
    </blockquote>
 
 ### Results
@@ -177,17 +177,21 @@ ON
 **Prompts:**
 1. > Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023
 
-2. > Please calculate daily campaign reach. Use a 7 day lookback window when determining the reach for a given day. Perform the calculation for each day from August 1 2023 to September 1 2023
+2. > Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
 
-3. > Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
-**Here are some generalized hints you can use to help answer the QUESTION.
-HINT 1: When a user asks for reach with an n-day lookback window you should determine how many users saw an ad during the previous n days 
-HINT 2: The BETWEEN SQL function is inclusive of its bounds. That means that when using BETWEEN for an n day window calculation you should use n-1 days in the calculation.**
+3. <blockquote> Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
+
+   **TIPS: 
+
+   - TIP 1: The reach for a given day is defined to be count of distinct users who were exposed anytime during the previous 7 days.
+   - TIP 2: The BETWEEN SQL function is inclusive of its bounds. That means that when using BETWEEN for a 7 day window calculation 
+         you should use 6 days in the calculation.**
+   </blockquote>
 
 ### Results
 | Prompt | Total Runs | Answer Returned | Correct Answer |
 |--------|------------|-----------------|----------------|
-| Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023 | 20 | 17 | 6 (30%) |
+| >Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023 | 20 | 17 | 6 (30%) |
 | Please calculate daily campaign reach. Use a 7 day lookback window when determining the reach for a given day. Perform the calculation for each day from August 1 2023 to September 1 2023 | 20 | 19 | 2 (10%) |
 | - | 20 | - | - |
 ### Analysis of Responses
