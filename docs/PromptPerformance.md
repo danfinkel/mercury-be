@@ -143,7 +143,7 @@ The three tested are prompts are
 |--------|------------|-----------------|----------------|
 | <blockquote>How many users saw an ad?</blockquote> | 20 | 19 | 19 (95%) |
 | <blockquote>What is the total reach of the campaign?</blockquote> | 20 | 20 | 4 (20%) |
-| <blockquote>What is the total reach of the campaign?  **Here is a hint you can use to help answer the QUESTION. The total reach of an advertising campaign is determined by counting the number of distinct users who saw an ad.** </blockquote>| 20 | 20 | 20 (100%) |
+| <blockquote>What is the total reach of the campaign? <br> **Here is a hint you can use to help answer the QUESTION. The total reach of an advertising campaign is determined by counting the number of distinct users who saw an ad.** </blockquote>| 20 | 20 | 20 (100%) |
 
 ### What Went Right/ Wrong?*
 
