@@ -141,9 +141,9 @@ The three tested are prompts are
 ### Results
 | Prompt | Total Runs | Answer Returned | Correct Answer |
 |--------|------------|-----------------|----------------|
-| How many users saw an ad? | 20 | 19 | 19 (95%) |
-| What is the total reach of the campaign? | 20 | 20 | 4 (20%) |
-| What is the total reach of the campaign?  **Here is a hint you can use to help answer the QUESTION. The total reach of an advertising campaign is determined by counting the number of distinct users who saw an ad.** | 20 | 20 | 20 (100%) |
+| <blockquote>How many users saw an ad?</blockquote> | 20 | 19 | 19 (95%) |
+| <blockquote>What is the total reach of the campaign?</blockquote> | 20 | 20 | 4 (20%) |
+| <blockquote>What is the total reach of the campaign?  **Here is a hint you can use to help answer the QUESTION. The total reach of an advertising campaign is determined by counting the number of distinct users who saw an ad.** </blockquote>| 20 | 20 | 20 (100%) |
 
 ### What Went Right/ Wrong?*
 
