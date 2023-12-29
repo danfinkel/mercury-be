@@ -181,19 +181,25 @@ ON
 
 3. <blockquote> Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
 
-   **TIPS: 
+   **TIPS:**
 
-   - TIP 1: The reach for a given day is defined to be count of distinct users who were exposed anytime during the previous 7 days.
-   - TIP 2: The BETWEEN SQL function is inclusive of its bounds. That means that when using BETWEEN for a 7 day window calculation 
+   - **TIP 1: The reach for a given day is defined to be count of distinct users who were exposed anytime during the previous 7 days.**
+   - **TIP 2: The BETWEEN SQL function is inclusive of its bounds. That means that when using BETWEEN for a 7 day window calculation 
          you should use 6 days in the calculation.**
    </blockquote>
 
 ### Results
 | Prompt | Total Runs | Answer Returned | Correct Answer |
 |--------|------------|-----------------|----------------|
-| >Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023 | 20 | 17 | 6 (30%) |
-| Please calculate daily campaign reach. Use a 7 day lookback window when determining the reach for a given day. Perform the calculation for each day from August 1 2023 to September 1 2023 | 20 | 19 | 2 (10%) |
-| - | 20 | - | - |
+| <blockquote>Please report daily campaign reach where reach for a given day is defined to be total number of users who were exposed in the previous 7 day window. Perform the calculation for each day from August 1 2023 to September 1 2023</blockquote> | 20 | 17 | 6 (30%) |
+| <blockquote>Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.</blockquote> | 20 | 19 | 2 (10%) |
+| <blockquote> Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
+   **TIPS:**
+
+   - TIP 1: The reach for a given day is defined to be count of distinct users who were exposed anytime during the previous 7 days.
+   - TIP 2: The BETWEEN SQL function is inclusive of its bounds. That means that when using BETWEEN for a 7 day window calculation 
+         you should use 6 days in the calculation.**
+   </blockquote> | 20 | - | - |
 ### Analysis of Responses
 
 **Correct Answer:**
