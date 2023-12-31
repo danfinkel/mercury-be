@@ -179,14 +179,12 @@ ON
 
 2. > Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
 
-3. <blockquote> Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.
-
+3. <blockquote> Please report daily campaign reach from August 1 2023 to September 1 2023 with a 7 day lookback window.<br><br>
  **TIPS**:
  - **TIP 1: The reach for a given day is defined to be count of distinct users who were exposed to an ad anytime during the previous 7 days.**
  - **TIP 2: Do not use a GROUP BY statement in your SQL. This can lead to an incorrect result.**
  - **TIP 3: The BETWEEN SQL function is inclusive of its bounds. That means that when using BETWEEN for a 7 day window calculation you should use 6 days in the calculation.**
- 
-   </blockquote>
+ </blockquote>
 
 ### Results
 | Prompt | Total Runs | Answer Returned | Correct Answer |
