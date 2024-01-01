@@ -295,3 +295,7 @@ distinct users reached only by the `current_date` day.
         """, (start_date, end_date, start_date - timedelta(days=7), start_date))
         return cur.fetchall()
 ```
+
+## Time Series Lift Prompt Performance
+
+1. >Please report daily campaign lift from August 1 2023 to September 1 2023 with a 7 day causality window.<br><br>**TIPS:<br> - TIP 1: The lift for a given day is defined to be the difference between conversion rates of exposed users and unexposed users divided by the conversion rate of unexposed users.<br> - TIP 2: The conversion rate of exposed users is the ratio of users who converted within 7 days of exposure to the total count of users exposed on the measurement date<br> - TIP 3: The conversion rate of unexposed users is the ratio of users who were not exposed but converted within 7 days of the measurement date to the total count of unexposed users.**
