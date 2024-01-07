@@ -18,6 +18,7 @@ import time
 # from postgres_da_ai_agent.agents.instruments import PostgresAgentInstruments
 # from postgres_da_ai_agent.modules import embeddings
 
+os.environ.pop('OPENAI_API_KEY', None)
 dotenv.load_dotenv()
 
 assert os.environ.get("RENDER_PG_URL"), "POSTGRES_CONNECTION_URL not found in .env file"
@@ -33,7 +34,7 @@ custom_function_tool_config = {
     "type": "function",
     "function": {
         "name": "run_python",
-        "description": "A function that executes a python script. If you pass in a string, it will be executed as a python script.",
+        "description": "A function that executes a python script. If you pass in a string, it will be executed as a python script. It returns a tuple of the form (status, output).",
         "parameters": {
             "type": "object",
             "properties": {"pythonScript": {"type": "string"}},

@@ -260,7 +260,7 @@ class Turbo4:
         return self, response.id
 
     def add_message(self, message: str, refresh_threads: bool = False):
-        print(f"add_message({message})")
+        #print(f"add_message({message})")
         self.local_messages.append(message)
         self.client.beta.threads.messages.create(
             thread_id=self.current_thread_id, content=message, role="user" # type: ignore
